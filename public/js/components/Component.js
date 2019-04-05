@@ -1,10 +1,10 @@
 (function(root, factory){
 
     root.Components = {
-        Component: factory(),
+        Component: factory(root.$),
     };
 
-}(window, function() {
+}(window, function($) {
     'use strict';
 
     function Component(element, props) {

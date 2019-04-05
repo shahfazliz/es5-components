@@ -1,8 +1,14 @@
 (function(root, factory) {
 
-    root.Components.Panel = factory(root.Components);
+    root.Components.Panel = factory(
+        root.$,
+        root.Components
+    );
 
-}(window, function(Components) {
+}(window, function(
+    $,
+    Components
+) {
     'use strict';
 
     /**
