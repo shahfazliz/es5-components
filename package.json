@@ -1,0 +1,12 @@
+{
+  "name": "Components",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "jsdoc": "^3.5.5"
+  }
+}
