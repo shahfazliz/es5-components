@@ -22,7 +22,7 @@
         Components.Component.prototype.render.call(this, newProps);
         
         var brand = 
-            `<a class="navbar-brand" href="#">${this.props.brand}</a>`;
+            `<a class="navbar-brand" href="/">${this.props.brand}</a>`;
         
         var burgerButton = 
             `<button 
@@ -41,17 +41,17 @@
             .props
             .children
             .map(function(link) {
+                var li = $('<li></li>');
                 return window
                     .location
                     .pathname
                     .slice(1) === $(link).attr('href')
-                        ? `<li class="active">
-                                ${link}
-                                <span class="sr-only">(current)</span>
-                            </li>`
-                        : `<li>${link}</li>`;
-            })
-            .join('');
+                        ? li
+                            .addClass('active')
+                            .append($(link))
+                            .append('<span class="sr-only">(current)</span>')
+                        : li.append($(link));
+            });
             
         var dropdownExample = 
             `<li class="dropdown">
@@ -91,6 +91,13 @@
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>`;
             
+        var loginBarExample =
+            `<form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="your@email.com">
+                </div>
+            </form>`;
+            
         var rightNavExample =
             `<ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Link</a></li>
@@ -109,31 +116,26 @@
         this
             .element
             .html('')
-            .append(
-                `<nav class="navbar navbar-default">
-                    <div class="container-fluid">
-                    
-                        <!-- Brand and toggle get grouped for better mobile display -->
-                        <div class="navbar-header">
-                            ${burgerButton}
-                            ${brand}
-                        </div>
-                
-                        <!-- Collect the nav links, forms, and other content for toggling -->
-                        <div 
-                            class="collapse navbar-collapse" 
-                            id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                ${links}
-                                <!--${dropdownExample}-->
-                            </ul>
-                            
-                            <!--${searchBarExample}-->
-                            <!--${rightNavExample}-->
-                            
-                        </div><!-- /.navbar-collapse -->
-                    </div><!-- /.container-fluid -->
-                </nav>`);
+            .append($('<nav class="navbar navbar-default">')
+                .css('background-color', 'white')
+                .append($('<div class="container-fluid">')
+                    // Brand and toggle get grouped for better mobile display
+                    .append($('<div class="navbar-header">')
+                        .append(burgerButton)
+                        .append(brand)
+                    )
+                    // Collect the nav links, forms, and other content for toggling
+                    .append($('<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">')
+                        .append($('<ul class="nav navbar-nav">')
+                            .append(links)
+                            // .append(dropdownExample)
+                        )
+                        // .append(searchBarExample)
+                        // .append(rightNavExample)
+                        .append(loginBarExample)
+                    )
+                )
+            );
         
         return this;
     };

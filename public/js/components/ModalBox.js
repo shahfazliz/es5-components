@@ -1,8 +1,14 @@
 (function(root, factory) {
 
-    root.Components.ModalBox = factory(root.Components);
+    root.Components.ModalBox = factory(
+        root.$,
+        root.Components
+    );
 
-}(window, function(Components) {
+}(window, function(
+    $,
+    Components
+) {
     'use strict';
 
     /**
@@ -79,26 +85,29 @@
         Components.Component.prototype.render.call(this, newProps);
 
         function renderHeader(header) {
-            return '<div class="modal-header">' +
-                    '<div class="bootstrap-dialog-header">' +
-                        '<div class="bootstrap-dialog-close-button">' +
+            if (!header) {
+                return '';
+            }
+            
+            return $('<div class="modal-header">')
+                .append($('<div class="bootstrap-dialog-header">')
+                    .append('<div class="bootstrap-dialog-close-button">' +
                             '<button ' +
                                 'aria-label="close" ' +
                                 'class="close" ' +
-                                'data-dismiss="modal">×</button>' +
-                        '</div>' +
-                        '<div class="bootstrap-dialog-title" id="device-health-selector-modal_title">' +
-                            header +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
+                                'data-dismiss="modal">x</button>' +
+                        '</div>'
+                    )
+                    .append($('<div class="bootstrap-dialog-title" id="device-health-selector-modal_title">')
+                        .append(header)));
         }
 
         function renderBody(children) {
             var modalBody = $('<div class="modal-body"></div>')
                 .css('min-height', '5em');
 
-            if (children.length) {
+            // Children are in an array
+            if (children.length && children.forEach) {
                 children.forEach(function(child) {
                     if(child.element) {
                         modalBody.append(child.element);
@@ -106,7 +115,15 @@
                         modalBody.append(child);
                     }
                 }.bind(this));
-            } else {
+            }
+            
+            // A single child without an array
+            else if (children.length) {
+                modalBody.append(children);
+            }
+            
+            // Children is empty
+            else {
                 modalBody.modalSpinner('on');
             }
 
@@ -114,6 +131,10 @@
         }
 
         function renderFooter(footer) {
+            if (!footer) {
+                return '';
+            }
+            
             var footers = $(('<div class="modal-footer"></div>'))
                 .append(footer)
                 .find('button')

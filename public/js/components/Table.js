@@ -32,7 +32,6 @@
                 }));
         }
                 
-                
         function createRow(rowColumn) {
             return $('<tr></tr>')
                 .append(Object.keys(rowColumn).map(function(column) {

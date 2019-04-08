@@ -1,10 +1,16 @@
 (function(root, factory){
 
     root.Components = {
-        Component: factory(root.$),
+        Component: factory(
+            root.$,
+            root.moment
+        ),
     };
 
-}(window, function($) {
+}(window, function(
+    $, 
+    moment
+) {
     'use strict';
 
     function Component(element, props) {
@@ -12,13 +18,25 @@
         this.props = this.assign({}, props);
         this.props.children = this.props.children
             || this.element.children();
-        this.observables = [];
+        this.observables = {};
     }
+    
+    Component.prototype.currencyFormat = function (currency, number) {
+        return currency + parseFloat(number)
+            .toFixed(2)
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    };
+    
+    Component.prototype.selectRandomElement = function (arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    };
 
-    Component.prototype.assign = function(targetObject, sourceObject) {
-        var result = Object.keys(targetObject).length
-            ? this.assign({}, targetObject)
-            : {};
+    Component.prototype.assign = function (targetObject, sourceObject) {
+        var result = Object
+            .keys(targetObject)
+            .length
+                ? this.assign({}, targetObject)
+                : {};
 
         if (sourceObject) {
             Object
@@ -31,7 +49,7 @@
         return result;
     };
 
-    Component.prototype.setState = function(newState) {
+    Component.prototype.setState = function (newState) {
         var clonedState = this.assign({}, this.state);
         delete this.state;
         this.state = this.assign(clonedState, newState);
@@ -42,33 +60,57 @@
         return this;
     };
 
-    Component.prototype.request = function(requestObject) {
-        $.ajax(requestObject);
+    Component.prototype.request = $.ajax;
+    
+    Component.prototype.moment = moment;
+
+    Component.prototype.registerObserver = function (observableName, observableCallback) {
+        this.observables[observableName] = observableCallback;
+
+        return this;
+    };
+    
+    Component.prototype.unregisterObserver = function (observableName) {
+        delete this.observables[observableName];
+        
+        return this;
+    };
+
+    Component.prototype.notifyObservers = function () {
+        Object
+            .values(this.observables)
+            .forEach(function(observe) {
+                observe();
+            });
 
         return this;
     };
 
-    Component.prototype.registerObserver = function(ObservableCallback) {
-        this.observables.push(ObservableCallback);
-
-        return this;
-    };
-
-    Component.prototype.notifyObservers = function() {
-        this.observables.forEach(function(observe) {
-            observe();
-        });
-
-        return this;
-    };
-
-    Component.prototype.destroy = function() {
+    Component.prototype.destroy = function () {
+        if (this.props.children) {
+            this
+                .props
+                .children
+                .forEach(function (child) {
+                    if (child.destroy) {
+                        child.destroy();
+                    }
+                    child = undefined;
+                });
+                
+            delete this.props.children;
+        }
+        
+        delete this.props;
+        delete this.state;
+        delete this.observables;
+        
         this
             .element
             .remove();
     };
 
-    Component.prototype.render = function(newProps) {
+    Component.prototype.render = function (newProps) {
         if (newProps) {
             this.props = this.assign(this.props, newProps);
             this.notifyObservers();

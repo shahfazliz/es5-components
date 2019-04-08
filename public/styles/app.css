@@ -1,0 +1,22 @@
+body {
+    background-color: SeaShell;
+    opacity: 0.9;
+}
+
+.main-content {
+    margin:0 auto;
+    max-width: 900px;
+}
+
+table {
+    background-color: white;
+}
+
+.card-style {
+    display: inline-block;
+    width: calc(100% / 4 - 10px);
+    margin: 5px; 
+    padding: 5px; 
+    background-color: white; 
+    border: solid 1px AntiqueWhite;
+}

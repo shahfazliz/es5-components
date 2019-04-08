@@ -16,7 +16,8 @@
      * @param {Object} [props={}] - Panel's properties for this element
      * @param {string[]|jQuery[]} [props.children] - Children of this element we want to append in this panel's body
      * @param {string|jQuery} [props.footer] - Pass another DOM element for this panel's footer
-     * @param {string|jQuery} [props.header] - Pass another DOM element for this panel's header
+     * @param {string|jQuery} [props.heading] - Pass another DOM element for this panel's header
+     * @param {string|jQuery} [props.content] - 
      * @param {string|jQuery} element - DOM container we want to re-create this modal box
      * @param {string} props.id - Unique Id of this element
      */
@@ -25,7 +26,6 @@
 
         this.setState(this.props);
     }
-
     Panel.prototype = Object.create(Components.Component.prototype);
     Panel.prototype.constructor = Panel;
 
@@ -109,7 +109,8 @@
 
         this
             .element
-            .html('');
+            .html('')
+            .addClass('panel panel-default');
 
         if (this
             .props
