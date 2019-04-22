@@ -8,7 +8,7 @@
     };
 
 }(window, function(
-    $, 
+    $,
     moment
 ) {
     'use strict';
@@ -20,29 +20,39 @@
             || this.element.children();
         this.observables = {};
     }
-    
+
     Component.prototype.currencyFormat = function (currency, number) {
         return currency + parseFloat(number)
             .toFixed(2)
             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     };
-    
+
     Component.prototype.selectRandomElement = function (arr) {
         return arr[Math.floor(Math.random() * arr.length)];
     };
 
     Component.prototype.assign = function (targetObject, sourceObject) {
-        var result = Object
-            .keys(targetObject)
-            .length
-                ? this.assign({}, targetObject)
-                : {};
+        // Copy the targetObject into a temporary result
+        var result = targetObject
+            && Object.keys(targetObject).length
+            ? this.assign({}, targetObject)
+            : {};
 
+        // Now copy each key values in sourceObject into result regardless if value is falsy because
+        // falsy could be the intended state. That's why we don't use $.extend anymore.
         if (sourceObject) {
             Object
                 .keys(sourceObject)
-                .forEach(function(key) {
-                    result[key] = sourceObject[key];
+                .forEach(function (key) {
+                    var value = sourceObject[key];
+
+                    if (!Array.isArray(value)
+                        && Object.keys(value).length
+                    ) {
+                        value = this.assign(result[key], value);
+                    }
+
+                    result[key] = value;
                 });
         }
 
@@ -61,7 +71,7 @@
     };
 
     Component.prototype.request = $.ajax;
-    
+
     Component.prototype.moment = moment;
 
     Component.prototype.registerObserver = function (observableName, observableCallback) {
@@ -69,10 +79,10 @@
 
         return this;
     };
-    
+
     Component.prototype.unregisterObserver = function (observableName) {
         delete this.observables[observableName];
-        
+
         return this;
     };
 
@@ -97,14 +107,14 @@
                     }
                     child = undefined;
                 });
-                
+
             delete this.props.children;
         }
-        
+
         delete this.props;
         delete this.state;
         delete this.observables;
-        
+
         this
             .element
             .remove();
