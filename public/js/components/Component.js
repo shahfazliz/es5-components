@@ -13,11 +13,20 @@
 ) {
     'use strict';
 
+    /**
+     * Component is the base function for any javascript component to be created. This function is mainly
+     * inspired from ReactJS like building components with states and props where states are only mutable
+     * throuth setState() and props are not mutable unless it's re-rendered with new props. 
+     * @param {string|jQuery} element - A jQuery element or a css string selector of the DOM element to be
+     *                                  modified.
+     * @param {object} props
+     * @param {Array} [props.children=jQuery]
+     */
     function Component(element, props) {
         this.element = $(element);
-        this.props = this.assign({}, props);
-        this.props.children = this.props.children
+        props.children = props.children
             || this.element.children();
+        this.props = Object.freeze(Object.seal(this.assign({}, props)));
         this.observables = {};
     }
 
@@ -40,33 +49,40 @@
 
         // Now copy each key values in sourceObject into result regardless if value is falsy because
         // falsy could be the intended state. That's why we don't use $.extend anymore.
-        if (sourceObject) {
+        if (sourceObject
+            && Object.keys(sourceObject).length
+        ) {
             Object
                 .keys(sourceObject)
                 .forEach(function (key) {
                     var value = sourceObject[key];
 
-                    if (!Array.isArray(value)
+                    // Make sure the sourceObject[key] is really an object
+                    if (value
+                        && !Array.isArray(value)
                         && Object.keys(value).length
+                        && value instanceof Object
+                        // Check if the target has the key
+                        && targetObject[key]
                     ) {
-                        value = this.assign(result[key], value);
+                        value = this.assign(targetObject[key], value);
                     }
 
                     result[key] = value;
-                });
+                }.bind(this));
         }
-
         return result;
     };
 
+    /**
+     * this.state object is frozen
+     * @param {object} newState - The key value pairs we want to replace in this.state
+     */
     Component.prototype.setState = function (newState) {
         var clonedState = this.assign({}, this.state);
         delete this.state;
-        this.state = this.assign(clonedState, newState);
-        Object.freeze(this.state);
-
+        this.state = Object.freeze(Object.seal(this.assign(clonedState, newState)));
         this.notifyObservers();
-
         return this;
     };
 
@@ -122,7 +138,9 @@
 
     Component.prototype.render = function (newProps) {
         if (newProps) {
-            this.props = this.assign(this.props, newProps);
+            var clonedProps = this.assign(this.props, newProps);
+            delete this.props;
+            this.props = Object.freeze(Object.seal(this.assign(clonedProps, newProps)));
             this.notifyObservers();
         }
     };
