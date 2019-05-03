@@ -16,7 +16,7 @@
     /**
      * Component is the base function for any javascript component to be created. This function is mainly
      * inspired from ReactJS like building components with states and props where states are only mutable
-     * throuth setState() and props are not mutable unless it's re-rendered with new props. 
+     * through setState() and props are not mutable unless it's re-rendered with new props.
      * @param {string|jQuery} element - A jQuery element or a css string selector of the DOM element to be
      *                                  modified.
      * @param {object} props
@@ -104,10 +104,10 @@
 
     Component.prototype.notifyObservers = function () {
         Object
-            .values(this.observables)
-            .forEach(function(observe) {
-                observe();
-            });
+            .keys(this.observables)
+            .forEach(function (observableKey) {
+                this.observables[observableKey]();
+            }.bind(this));
 
         return this;
     };
