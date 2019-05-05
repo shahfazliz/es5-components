@@ -27,41 +27,6 @@
                 acc[field.label] = field.defaultValue;
                 return acc;
             }.bind(this), {}));
-        
-        // Create submit button
-        this.submitButton = $('<button class="btn btn-primary">Submit</button>')
-            .on('click', function (event) {
-                event.preventDefault();
-                this
-                    .props
-                    .onSubmitCallback(this.state);
-            }.bind(this));
-        
-        // Toggle submitButton
-        function toggleSubmitButton() {
-            this
-                .props
-                .fields
-                .some(function (field) {
-                    if (field.required && !this.state[field.label]) {
-                        this
-                            .submitButton
-                            .attr('disabled', true);
-                        return true;
-                    }
-                    else {
-                        this
-                            .submitButton
-                            .removeAttr('disabled');
-                    }
-                }.bind(this));
-        }
-        
-        // Register observer to update submit button
-        this.registerObserver('submitButton', toggleSubmitButton.bind(this));
-        
-        // Initialize the submitButton if it's suppose to enable or disabled
-        toggleSubmitButton.call(this);
     }
     Form.prototype = Object.create(Components.Component.prototype);
     Form.prototype.constructor = Form;
@@ -82,6 +47,38 @@
         var errorElement = $('<label class="col-sm-6" style="color: red;">');
         
         var inputElement = $('<input class="col-sm-4" type="text" name="' + label.split(' ').join('_').toLocaleLowerCase() + '" value="' + defaultValue + '" placeholder="' + placeholder + '"/>')
+            .on('change keyup paste mouseup', function (event) {
+                if (required && !event.target.value) {
+                    errorElement.html('Required field');
+                }
+                else {
+                    errorElement.html('');
+                }
+                
+                this.setState({
+                    [label]: event.target.value,
+                });
+            }.bind(this));
+            
+        return $('<div class="row">')
+            .append(labelElement)
+            .append(inputElement)
+            .append(errorElement);
+    };
+    
+    Form.prototype.createTextArea = function(label, placeholder, defaultValue, required) {
+        defaultValue = defaultValue || '';
+        
+        var labelElement = $('<label class="col-sm-2">')
+            .append(label)
+            .append(required
+                ? '<label style="color: red;"> *</label>'
+                : '')
+            .append(' :');
+        
+        var errorElement = $('<label class="col-sm-6" style="color: red;">');
+        
+        var inputElement = $('<textarea class="col-sm-4" name="' + label.split(' ').join('_').toLocaleLowerCase() + '" placeholder="' + placeholder + '">' + defaultValue + '</textarea>')
             .on('change keyup paste mouseup', function (event) {
                 if (required && !event.target.value) {
                     errorElement.html('Required field');
@@ -138,8 +135,32 @@
     };
     
     Form.prototype.createFormControl = function () {
-        return $('<div class="row">')
-            .append(this.submitButton);
+        // Create submit button
+        var submitButton = $('<button class="btn btn-primary">Submit</button>');
+        
+        // Toggle submitButton
+        function toggleSubmitButton() {
+            this
+                .props
+                .fields
+                .some(function (field) {
+                    if (field.required && !this.state[field.label]) {
+                        submitButton.attr('disabled', true);
+                        return true;
+                    }
+                    else {
+                        submitButton.removeAttr('disabled');
+                    }
+                }.bind(this));
+        }
+        
+        // Register observer to update submit button
+        this.registerObserver('submitButton', toggleSubmitButton.bind(this));
+        
+        // Initialize the submitButton if it's suppose to enable or disabled
+        toggleSubmitButton.call(this);
+        
+        return $('<div class="row">').append(submitButton);
     };
     
     Form.prototype.render = function(newProps) {
@@ -150,23 +171,35 @@
             .html('')
             .append('<h3>' + this.props.title + '</h3>')
             .append($('<form>')
+                .on('submit', function (event) {
+                    event.preventDefault();
+                     this
+                        .props
+                        .onSubmitCallback(this.state);
+                }.bind(this))
                 .append(this
                     .props
                     .fields
                     .map(function (field) {
-                        if (field.type === 'text') {
-                            return this.createTextField(
-                                field.label,
-                                field.placeholder,
-                                field.defaultValue,
-                                field.required);
-                        }
-                        else if (field.type === 'select') {
-                            return this.createSelectField(
-                                field.label,
-                                field.options,
-                                field.defaultValue,
-                                field.required);
+                        switch(field.type) {
+                            case 'text':
+                                return this.createTextField(
+                                    field.label,
+                                    field.placeholder,
+                                    field.defaultValue,
+                                    field.required);
+                            case 'textarea':
+                                return this.createTextArea(
+                                    field.label,
+                                    field.placeholder,
+                                    field.defaultValue,
+                                    field.required);
+                            case 'select':
+                                return this.createSelectField(
+                                    field.label,
+                                    field.options,
+                                    field.defaultValue,
+                                    field.required);
                         }
                     }.bind(this))
                 )
