@@ -23,18 +23,8 @@ $(document).ready(function() {
         )
         .render();
     
-    var Component = new Components.Component();
-    
-    if ($('#hospital-appointments').length) {
-        new Components
-            .Calendar('#hospital-appointments', {
-                days: 3,
-            })
-            .render();
-    }
-    
     if ($('#main-content').length) {
-        var testForm = new Components
+        new Components
             .Form('#main-content', {
                 title: 'Form Example',
                 fields: [{

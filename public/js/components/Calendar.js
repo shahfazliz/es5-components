@@ -23,25 +23,29 @@
     Calendar.prototype.render = function(newProps) {
         Components.Component.prototype.render.call(this, newProps);
         
-        var startTimeSlot  = this
+        // 30 minutes time slots
+        var timeBlock = 30;
+        
+        // Start time of the day is 10.00am
+        var initTimeSlot  = this
             .moment()
             .hour(10)
             .minute(0)
             .second(0);
         
+        // Last time slot of the day is 9.30pm
         var lastTimeSlot = this
             .moment()
             .hour(21)
-            .minute(30)
+            .minute(timeBlock)
             .second(0);
 
-        // Set timeslots
+        // Build empty timeslots for the day
         var timeSlots = {};
-        var nextTimeSlot = startTimeSlot;
         
-        while(nextTimeSlot.isSameOrBefore(lastTimeSlot)) {
-            timeSlots[this.moment(nextTimeSlot).format("YYYY-MM-DD HH:mm:ss")] = '';
-            nextTimeSlot = nextTimeSlot.add(30, 'minutes');
+        while(initTimeSlot.isSameOrBefore(lastTimeSlot)) {
+            timeSlots[this.moment(initTimeSlot).format("YYYY-MM-DD HH:mm:ss")] = '';
+            initTimeSlot = initTimeSlot.add(timeBlock, 'minutes');
         }
         
         timeSlots = this.assign(timeSlots, this.props.appointments);
@@ -72,7 +76,7 @@
             .css('text-align', 'left')
             .html('')
             .append($('<div>')
-                .append($('<span>' + startTimeSlot.format("DD/MM/YYYY") + '</span>'))
+                .append($('<span>' + this.moment().format("DD/MM/YYYY") + '</span>'))
                 .append($(`
                     <button class="btn btn-link">
                         <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
