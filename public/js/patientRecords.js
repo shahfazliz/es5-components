@@ -1,5 +1,7 @@
 /* global $, Components */
 
+'use strict';
+
 $(document).ready(function() {
     var Component = new Components.Component();
     
