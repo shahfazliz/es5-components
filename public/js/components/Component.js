@@ -87,15 +87,6 @@
         return this;
     };
 
-    Component.prototype.request = function (requestObject) {
-        this.requestObject = requestObject 
-            || this.requestObject;
-            
-        $.ajax(this.requestObject);
-        
-        return this;
-    };
-
     Component.prototype.moment = moment;
 
     Component.prototype.registerObserver = function (observableName, observableCallback) {

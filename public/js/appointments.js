@@ -1,8 +1,7 @@
 /* global $, Components */
 
 $(document).ready(function() {
-    var Component = new Components.Component();
-    
+    // Create Calendar
     var patientAppointments = new Components.Calendar(
         '#hospital-appointments', 
         {
@@ -10,14 +9,14 @@ $(document).ready(function() {
         }
     );
         
-    Component.request({
-        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/appointments/',
-        method: 'GET',
-        success: function(data) {
+    new Components
+        .Request({
+            url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/appointments/',
+        })
+        .get(function(data) {
             console.log(data);
             patientAppointments.render({
                 appointments: [],
             });
-        },
-    });
+        });
 });

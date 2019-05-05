@@ -67,38 +67,37 @@ $(document).ready(function() {
             });
         });
         
-    Component.request({
-        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/packages/',
-        method: 'GET',
-        success: function(data) {
-            $('#hospital-packages')
-                .append(data
-                    .data
-                    .map(function(pack) {
-                        return $('<div class="card-style">')
-                            .hover(function() {
-                                $(this).css('box-shadow', '1px 3px 5px grey');
-                            }, function() {
-                                $(this).css('box-shadow', '');
-                            })
-                            .on('click', function(event) {
-                                event.stopPropagation();
-                                new Components
-                                    .ModalBox('<div>', {
-                                        children: '<img src="public/images/' + pack.image + '" style="width:100%;" />',
-                                    })
-                                    .render()
-                                    .show();
-                            })
-                            .append('<img src="public/images/' + pack.image + '" style="width:100%; height: auto;" />')
-                            .append($(`
-                                <div>
-                                    <div style='margin-top:5px; font-size:110%;'>${pack.name}</div>
-                                    <div style='margin-top:5px; color:Purple; font-size:140%;'>${Component.currencyFormat('RM', pack.price)}</div>
-                                </div>`)
-                                .append(makeAppointmentButton.clone(true)));
-                    }.bind(this))
-                );
-        },
-    });
+    new Components
+        .Request({
+            url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/packages/',
+        })
+        .get(function(data) {
+            $('#hospital-packages').append(data
+                .data
+                .map(function(pack) {
+                    return $('<div class="card-style">')
+                        .hover(function() {
+                            $(this).css('box-shadow', '1px 3px 5px grey');
+                        }, function() {
+                            $(this).css('box-shadow', '');
+                        })
+                        .on('click', function(event) {
+                            event.stopPropagation();
+                            new Components
+                                .ModalBox('<div>', {
+                                    children: '<img src="public/images/' + pack.image + '" style="width:100%;" />',
+                                })
+                                .render()
+                                .show();
+                        })
+                        .append('<img src="public/images/' + pack.image + '" style="width:100%; height: auto;" />')
+                        .append($(`
+                            <div>
+                                <div style='margin-top:5px; font-size:110%;'>${pack.name}</div>
+                                <div style='margin-top:5px; color:Purple; font-size:140%;'>${Component.currencyFormat('RM', pack.price)}</div>
+                            </div>`)
+                            .append(makeAppointmentButton.clone(true)));
+                }.bind(this))
+            );
+        });
 });
