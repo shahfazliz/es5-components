@@ -172,7 +172,7 @@ $(document).ready(function() {
     }
     
     if ($('#main-content').length) {
-        new Components
+        var testForm = new Components
             .Form('#main-content', {
                 title: 'Form Example',
                 fields: [{
@@ -199,5 +199,9 @@ $(document).ready(function() {
                 },
             })
             .render();
+        
+        // console.log('testForm.test', testForm.test);
+        // console.log('testForm.setTest()', testForm.setTest({hello: 'world',}));
+        // console.log('testForm.test', testForm.test);
     }
 });

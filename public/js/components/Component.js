@@ -24,9 +24,10 @@
      */
     function Component(element, props) {
         this.element = $(element);
-        props.children = props.children
+        this.props = this.assign({}, props);
+        this.props.children = this.props.children
             || this.element.children();
-        this.props = Object.freeze(Object.seal(this.assign({}, props)));
+        this.props = Object.freeze(Object.seal(this.props));
         this.observables = {};
     }
 

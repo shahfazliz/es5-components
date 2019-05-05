@@ -2,12 +2,14 @@
     
     root.Components.Form = factory(
         root.$,
-        root.Components
+        root.Components,
+        root.setTest
     );
     
 }(window, function(
     $,
-    Components
+    Components,
+    setTestLa
 ) {
     'use strict';
 
@@ -170,6 +172,8 @@
                 )
                 .append(this.createFormControl())
             );
+            
+        return this;
     };
     
     return Form;
