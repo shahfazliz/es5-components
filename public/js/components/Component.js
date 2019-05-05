@@ -87,7 +87,14 @@
         return this;
     };
 
-    Component.prototype.request = $.ajax;
+    Component.prototype.request = function (requestObject) {
+        this.requestObject = requestObject 
+            || this.requestObject;
+            
+        $.ajax(this.requestObject);
+        
+        return this;
+    };
 
     Component.prototype.moment = moment;
 

@@ -2,14 +2,12 @@
     
     root.Components.Form = factory(
         root.$,
-        root.Components,
-        root.setTest
+        root.Components
     );
     
 }(window, function(
     $,
-    Components,
-    setTestLa
+    Components
 ) {
     'use strict';
 
@@ -160,7 +158,9 @@
         // Initialize the submitButton if it's suppose to enable or disabled
         toggleSubmitButton.call(this);
         
-        return $('<div class="row">').append(submitButton);
+        return $('<div class="row">')
+            .append($('<div class="col-sm-12">')
+                .append(submitButton));
     };
     
     Form.prototype.render = function(newProps) {

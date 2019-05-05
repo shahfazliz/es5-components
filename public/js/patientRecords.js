@@ -3,8 +3,6 @@
 'use strict';
 
 $(document).ready(function() {
-    var Component = new Components.Component();
-    
     // Build the patient records table
     var PatientRecordsTable = new Components.Table(
         '#patient-records',
@@ -23,10 +21,11 @@ $(document).ready(function() {
     );
     
     // Request patient records and populate table
-    Component.request({
-        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
-        method: 'GET',
-        success: function(data) {
+    var patientRecordRequester = new Components
+        .Request({
+            url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
+        })
+        .get(function (data) {
             PatientRecordsTable.render({
                 rows: data
                     .data
@@ -34,7 +33,7 @@ $(document).ready(function() {
                         var date = new Date(patientRecord.created_at);
                         
                         var newPatientRecord = {
-                            date: `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`,
+                            date: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                             time: `${date.getHours()}:${date.getMinutes()}`,
                             patient: patientRecord.patient,
                             doctor: patientRecord.doctor,
@@ -46,8 +45,7 @@ $(document).ready(function() {
                     }
                 ),
             });
-        },
-    });
+        });
     
     var selectDoctorField = {
         type: 'select',
@@ -93,29 +91,29 @@ $(document).ready(function() {
                 enterTreatmentField
             ],
             onSubmitCallback: function (result) {
-                console.log(result);
-                Component.request({
-                    url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
-                    method: 'POST',
-                    data: {
-                        patient_id: result.Patient,
-                        doctor_id: result.Doctor,
-                        diagnosis: result.Diagnosis,
-                        treatment: result.Treatment,
-                    },
-                    success: function (data) {
-                        console.log(data);
-                    },
-                });
+                new Components
+                    .Request({
+                        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
+                        data: {
+                            patient_id: result.Patient,
+                            doctor_id: result.Doctor,
+                            diagnosis: result.Diagnosis,
+                            treatment: result.Treatment,
+                        },
+                    })
+                    .post(function (data) {
+                        patientRecordRequester.get();
+                    });
             },
         }
     );
         
     // Get list of doctors
-    Component.request({
-        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/doctors/',
-        method: 'GET',
-        success: function (data) {
+    new Components
+        .Request({
+            url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/doctors/',
+        })
+        .get(function (data) {
             // Repopulate select doctor's option field
             selectDoctorField.options = data
                 .data
@@ -134,14 +132,14 @@ $(document).ready(function() {
                     enterTreatmentField
                 ],
             });
-        }
-    });
+        });
     
     // Get list of patients
-    Component.request({
-        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patients/',
-        method: 'GET',
-        success: function (data) {
+    new Components
+        .Request({
+            url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patients/',
+        })
+        .get(function (data) {
             // Repopulate select patient's field
             selectPatientField.options = data
                 .data
@@ -160,6 +158,5 @@ $(document).ready(function() {
                     enterTreatmentField
                 ],
             });
-        },
-    });
+        });
 });
