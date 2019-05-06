@@ -1,0 +1,39 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": [
+        "airbnb-base",
+        "eslint:recommended",
+        "plugin:compat/recommended"
+    ],
+    "rules": {
+        "comma-dangle": ["error", {
+            "arrays": "always-multiline",
+            "exports": "only-multiline",
+            "functions": "never",
+            "imports": "only-multiline",
+            "objects": "always-multiline"
+        }],
+        "indent": ["error", 4, {
+            "SwitchCase": 1
+        }],
+        "linebreak-style": ["error", "unix"],
+        "newline-per-chained-call":["error", {
+            "ignoreChainWithDepth": 2
+        }],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "sort-keys": ["error", "asc", {
+            "caseSensitive": true,
+            "natural": true
+        }],
+        "sort-vars": ["error", {
+            "ignoreCase": true
+        }],
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never"
+        }]
+    }
+}

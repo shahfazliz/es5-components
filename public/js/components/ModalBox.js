@@ -1,11 +1,11 @@
-(function(root, factory) {
+(function (root, factory) {
 
     root.Components.ModalBox = factory(
         root.$,
         root.Components
     );
 
-}(window, function(
+}(window, function (
     $,
     Components
 ) {
@@ -63,7 +63,7 @@
     ModalBox.prototype = Object.create(Components.Component.prototype);
     ModalBox.prototype.constructor = ModalBox;
 
-    ModalBox.prototype.show = function() {
+    ModalBox.prototype.show = function () {
         this
             .element
             .modal('show')
@@ -75,7 +75,7 @@
         return this;
     };
 
-    ModalBox.prototype.hide = function() {
+    ModalBox.prototype.hide = function () {
         this
             .element
             .modal('hide');
@@ -83,7 +83,7 @@
         return this;
     };
 
-    ModalBox.prototype.render = function(newProps) {
+    ModalBox.prototype.render = function (newProps) {
         Components.Component.prototype.render.call(this, newProps);
 
         function renderHeader(header) {
@@ -109,7 +109,7 @@
                 .css('overflow-y', 'auto');
 
             if (children.length) {
-                children.forEach(function(child) {
+                children.forEach(function (child) {
                     if(child.element) {
                         modalBody.append(child.element);
                     } else {

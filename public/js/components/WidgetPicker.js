@@ -1,8 +1,14 @@
-(function(root, factory) {
+(function (root, factory) {
 
-    root.Components.WidgetPicker = factory(root.Components);
+    root.Components.WidgetPicker = factory(
+        root.$,
+        root.Components
+    );
 
-}(window, function(Components) {
+}(window, function (
+    $,
+    Components
+) {
     'use strict';
 
     /**
