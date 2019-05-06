@@ -31,42 +31,47 @@
     WidgetPicker.prototype = Object.create(Components.Component.prototype);
     WidgetPicker.prototype.constructor = WidgetPicker;
 
-    WidgetPicker.prototype.initWidgetOptions = function() {
+    WidgetPicker.prototype.initWidgetOptions = function () {
         this.widgetOptions = this
             .props
             .options
-            .map(function(option, index) {
+            .map(function (option, index) {
                 return new Components.WidgetOption(
-                    '<div></div>',
+                    '<div>',
                     {
                         description: option.description,
                         enable: option.enable || false,
+                        icon: option.icon,
                         id: option.id || index,
                         imageSource: option.imageSource,
-                        onDeselect: function(id) {
+                        onDeselect: function (id) {
                             this.setState({
                                 optionSelected: this
                                     .state
                                     .optionSelected
-                                    .filter(function(opt) {
+                                    .filter(function (opt) {
                                         return opt.id !== id;
                                     }),
                             });
 
-                            // Enable the rest of the option
+                            // Enable the rest of the option and remove notification
                             if (this.props.max > this.state.optionSelected.length) {
                                 this
                                     .widgetOptions
-                                    .forEach(function(opt) {
+                                    .forEach(function (opt) {
                                         if (!opt.isSelected()) {
                                             opt
                                                 .enable()
                                                 .render();
                                         }
                                     });
+
+                                this
+                                    .warningNotification
+                                    .hide();
                             }
                         }.bind(this),
-                        onSelect: function(returnObj) {
+                        onSelect: function (returnObj) {
                             this.setState({
                                 optionSelected: this
                                     .state
@@ -74,19 +79,26 @@
                                     .concat(returnObj),
                             });
 
-                            // Disable the rest of the option
+                            // Disable the rest of the option and enable notification
                             if (this.props.max <= this.state.optionSelected.length) {
-                                this.widgetOptions.forEach(function(opt) {
+                                this.widgetOptions.forEach(function (opt) {
                                     if (!opt.isSelected()) {
                                         opt
                                             .disable()
                                             .render();
                                     }
                                 });
+
+                                this
+                                    .warningNotification
+                                    .show();
                             }
                         }.bind(this),
                         returnObject: option.returnObject,
-                        title: option.title,
+                        title: Translator.trans(
+                            option.title,
+                            {limit: '-'}
+                        ),
                     }
                 ).render();
             }, this);
@@ -94,22 +106,23 @@
         return this.widgetOptions;
     };
 
-    WidgetPicker.prototype.initModalBox = function() {
+    WidgetPicker.prototype.initModalBox = function () {
         // Create submit widget and attach the onSubmit callback
-        var submitWidgetPickerButton = $(
-            '<button class="btn btn-primary">' +
-                Translator.trans('button.submit') +
-            '</button>')
+        var submitWidgetPickerButton = $('<button class="btn btn-primary">')
+            .append(Translator.trans('button.submit'))
             .off()
-            .on('click', function() {
+            .on('click', function () {
                 this.props.onSubmit(this.state.optionSelected);
             }.bind(this));
 
+        // Create notification element
+        this.warningNotification = $('<div class="alert alert-warning" role="alert">')
+            .append(Translator.trans('common_interface.dashboard.message.maximum_widgets_selected'))
+            .hide();
+
         // Create cancel widget and attach the onCancel callback
-        var cancelWidgetPickerButton = $(
-            '<button class="btn btn-primary">' +
-                Translator.trans('button.cancel') +
-            '</button>')
+        var cancelWidgetPickerButton = $('<button class="btn btn-primary">')
+            .append(Translator.trans('button.cancel'))
             .off()
             .on('click', this.props.onCancel);
 
@@ -117,32 +130,40 @@
         this.modalBox = new Components.ModalBox(
             this.element,
             {
-                children: this.widgetOptions,
-                footer: $('<div></div>')
+                children: this.widgetOptions.length
+                    ? this.widgetOptions
+                    : [$('<div>').append(Translator.trans('dashboards.message.error_no_widgets'))],
+                footer: $('<div>')
                     .append(submitWidgetPickerButton)
                     .append(cancelWidgetPickerButton),
                 header: Translator.trans('common_interface.dashboard.widget_picker'),
                 id: 'widgetPicker',
-                onHidden: function() {
+                notification: this.warningNotification,
+                onHidden: function () {
                     // Reset selection
                     this.setState({
                         optionSelected: [],
                     });
+
+                    // Remove notification
+                    this
+                        .warningNotification
+                        .hide();
+
                 }.bind(this),
             });
 
         return this.modalBox;
     };
 
-    WidgetPicker.prototype.show = function() {
+    WidgetPicker.prototype.show = function () {
         // Check again if max allowed to select is less than 0
         this
             .widgetOptions
-            .forEach(function(opt) {
+            .forEach(function (opt) {
                 if (this.props.max <= 0) {
                     opt.disable();
-                }
-                else {
+                } else if (opt.props.enable) {
                     opt.enable();
                 }
 
@@ -156,7 +177,7 @@
             .show();
     };
 
-    WidgetPicker.prototype.render = function(newProps) {
+    WidgetPicker.prototype.render = function (newProps) {
         Components.Component.prototype.render.call(this, newProps);
 
         // Destroy ModalBox if already exists

@@ -33,8 +33,6 @@
     function ModalBox(element, props) {
         Components.Component.call(this, element, props);
 
-        this.setState(this.props);
-
         this
             .element
             .attr('class', 'modal bootstrap-dialog type-primary fade size-wide in')
@@ -68,7 +66,11 @@
     ModalBox.prototype.show = function() {
         this
             .element
-            .modal('show');
+            .modal('show')
+            .find('.modal-body')
+            .animate({
+                scrollTop: 0,
+            });
 
         return this;
     };
@@ -85,29 +87,28 @@
         Components.Component.prototype.render.call(this, newProps);
 
         function renderHeader(header) {
-            if (!header) {
-                return '';
-            }
-            
-            return $('<div class="modal-header">')
-                .append($('<div class="bootstrap-dialog-header">')
-                    .append('<div class="bootstrap-dialog-close-button">' +
+            return '<div class="modal-header">' +
+                    '<div class="bootstrap-dialog-header">' +
+                        '<div class="bootstrap-dialog-close-button">' +
                             '<button ' +
                                 'aria-label="close" ' +
                                 'class="close" ' +
-                                'data-dismiss="modal">x</button>' +
-                        '</div>'
-                    )
-                    .append($('<div class="bootstrap-dialog-title" id="device-health-selector-modal_title">')
-                        .append(header)));
+                                'data-dismiss="modal">×</button>' +
+                        '</div>' +
+                        '<div class="bootstrap-dialog-title" id="device-health-selector-modal_title">' +
+                            header +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
         }
 
         function renderBody(children) {
-            var modalBody = $('<div class="modal-body"></div>')
-                .css('min-height', '5em');
+            var modalBody = $('<div class="modal-body">')
+                .css('min-height', '5em')
+                .css('max-height', '60vh')
+                .css('overflow-y', 'auto');
 
-            // Children are in an array
-            if (children.length && children.forEach) {
+            if (children.length) {
                 children.forEach(function(child) {
                     if(child.element) {
                         modalBody.append(child.element);
@@ -115,15 +116,7 @@
                         modalBody.append(child);
                     }
                 }.bind(this));
-            }
-            
-            // A single child without an array
-            else if (children.length) {
-                modalBody.append(children);
-            }
-            
-            // Children is empty
-            else {
+            } else {
                 modalBody.modalSpinner('on');
             }
 
@@ -131,10 +124,6 @@
         }
 
         function renderFooter(footer) {
-            if (!footer) {
-                return '';
-            }
-            
             var footers = $(('<div class="modal-footer"></div>'))
                 .append(footer)
                 .find('button')
@@ -147,6 +136,7 @@
             .append(renderHeader(this
                 .props
                 .header))
+            .append(this.props.notification)
             .append(renderBody(this
                 .props
                 .children))

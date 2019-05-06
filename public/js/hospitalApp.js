@@ -3,9 +3,9 @@
 $(document).ready(function() {
     new Components
         .NavBar(
-            '.hospital-navigations', 
+            '.hospital-navigations',
             {
-                brand: 
+                brand:
                     `<img
                         alt=""
                         src="logo.jpg"
@@ -22,34 +22,4 @@ $(document).ready(function() {
             },
         )
         .render();
-    
-    if ($('#main-content').length) {
-        new Components
-            .Form('#main-content', {
-                title: 'Form Example',
-                fields: [{
-                    type: 'text', 
-                    label: 'Name',
-                    defaultValue: '', 
-                    placeholder: 'Enter name', 
-                    required: true,
-                }, {
-                    type: 'select',
-                    label: 'Device',
-                    defaultValue: '2',
-                    options: [{
-                        label: 'D1',
-                        value: '1'
-                    }, {
-                        label: 'D2',
-                        value: '2',
-                    }],
-                    required: true,
-                }],
-                onSubmitCallback: function (result) {
-                    console.log(result);
-                },
-            })
-            .render();
-    }
 });

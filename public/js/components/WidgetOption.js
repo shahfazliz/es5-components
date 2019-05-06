@@ -39,32 +39,32 @@
     WidgetOption.prototype = Object.create(Components.Component.prototype);
     WidgetOption.prototype.constructor = WidgetOption;
 
-    WidgetOption.prototype.isSelected = function() {
+    WidgetOption.prototype.isSelected = function () {
         return this.state.select;
     };
 
-    WidgetOption.prototype.select = function() {
+    WidgetOption.prototype.select = function () {
         this.setState({
             select: true,
         });
         return this;
     };
 
-    WidgetOption.prototype.deselect = function() {
+    WidgetOption.prototype.deselect = function () {
         this.setState({
             select: false,
         });
         return this;
     };
 
-    WidgetOption.prototype.enable = function() {
+    WidgetOption.prototype.enable = function () {
         this.setState({
             enable: true,
         });
         return this;
     };
 
-    WidgetOption.prototype.disable = function() {
+    WidgetOption.prototype.disable = function () {
         this.setState({
             enable: false,
         });
@@ -72,7 +72,7 @@
         return this;
     };
 
-    WidgetOption.prototype.render = function(newProps) {
+    WidgetOption.prototype.render = function (newProps) {
         Components.Component.prototype.render.call(this, newProps);
 
         function onSelect() {
@@ -117,14 +117,42 @@
                     : 'white'
             )
             .off()
-            .html('')
-            .append($('<img />')
-                .css('vertical-align', 'top')
-                .css('margin', '30px 10px')
-                .attr('src', this.props.imageSource))
+            .html('');
+
+        if (this
+            .props
+            .icon
+        ) {
+            this
+                .element
+                .append(
+                    $('<i aria-hidden="true"></i>')
+                        .css({
+                            'margin': '30px 10px',
+                            'vertical-align': 'top',
+                        })
+                        .addClass(
+                            this
+                                .props
+                                .icon
+                        )
+                );
+
+        } else {
+            this
+                .element
+                .append($('<img />')
+                    .css('vertical-align', 'top')
+                    .css('margin', '30px 10px')
+                    .attr('src', this.props.imageSource))
+        }
+
+        this
+            .element
             .append($('<div>' +
                 '<h3>' + this.props.title + '</h3>' +
-                '<div>' + this.props.description + '</div>' +
+                '<div>' + this.props.title + '</div>' +
+                // '<div>' + this.props.description + '</div>' + // TODO: temporariy set description === title
                 '</div>')
                 .css('display', 'inline-block')
                 .css('margin', '10px')
