@@ -2,12 +2,14 @@
 
     root.Components.WidgetPicker = factory(
         root.$,
-        root.Components
+        root.Components,
+        root.Translator
     );
 
 }(window, function (
     $,
-    Components
+    Components,
+    Translator
 ) {
     'use strict';
 
