@@ -2,12 +2,11 @@
 
 'use strict';
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Build the patient records table
     var PatientRecordsTable = new Components.Table(
         '#patient-records',
         {
-            title: 'Patient Records',
             columns: [
                 'Date',
                 'Time',
@@ -16,10 +15,11 @@ $(document).ready(function() {
                 'Diagnosis',
                 'Treatment',
             ],
-            rows: []
+            rows: [],
+            title: 'Patient Records',
         }
     );
-    
+
     // Request patient records and populate table
     var patientRecordRequester = new Components
         .Request({
@@ -31,83 +31,82 @@ $(document).ready(function() {
                     .data
                     .map(function (patientRecord) {
                         var date = new Date(patientRecord.created_at);
-                        
+
                         var newPatientRecord = {
                             date: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
-                            time: `${date.getHours()}:${date.getMinutes()}`,
-                            patient: patientRecord.patient,
-                            doctor: patientRecord.doctor,
                             diagnosis: patientRecord.diagnosis,
+                            doctor: patientRecord.doctor,
+                            patient: patientRecord.patient,
+                            time: `${date.getHours()}:${date.getMinutes()}`,
                             treatment: patientRecord.treatment,
                         };
-                        
+
                         return newPatientRecord;
-                    }
-                ),
+                    }),
             });
         });
-    
+
     var selectDoctorField = {
-        type: 'select',
+        defaultValue: '1',
         label: 'Doctor',
-        defaultValue: '1',
         options: [],
         required: true,
-    };
-    
-    var selectPatientField = {
         type: 'select',
-        label: 'Patient',
+    };
+
+    var selectPatientField = {
         defaultValue: '1',
+        label: 'Patient',
         options: [],
         required: true,
+        type: 'select',
     };
-    
+
     var enterDiagnosisField = {
-        type: 'textarea', 
+        defaultValue: '',
         label: 'Diagnosis',
-        defaultValue: '', 
-        placeholder: 'Enter diagnosis', 
+        placeholder: 'Enter diagnosis',
         required: true,
+        type: 'textarea',
     };
-    
+
     var enterTreatmentField = {
-        type: 'textarea', 
+        defaultValue: '',
         label: 'Treatment',
-        defaultValue: '', 
-        placeholder: 'Enter treatment', 
+        placeholder: 'Enter treatment',
         required: true,
+        type: 'textarea',
     };
-    
+
     // Build the form to fill the patient records
     var patientRecordForm = new Components.Form(
-        '#patient-records-form', 
+        '#patient-records-form',
         {
-            title: 'Add Patient Record',
             fields: [
-                selectDoctorField, 
-                selectPatientField, 
-                enterDiagnosisField, 
-                enterTreatmentField
+                selectDoctorField,
+                selectPatientField,
+                enterDiagnosisField,
+                enterTreatmentField,
             ],
             onSubmitCallback: function (result) {
                 new Components
                     .Request({
-                        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
                         data: {
-                            patient_id: result.Patient,
-                            doctor_id: result.Doctor,
                             diagnosis: result.Diagnosis,
+                            doctor_id: result.Doctor,
+                            patient_id: result.Patient,
                             treatment: result.Treatment,
                         },
+                        url: 'https://hospitalapi-shahfazliz.c9users.io:8081/api/patient_records/',
                     })
-                    .post(function (data) {
+                    .post(function () {
                         patientRecordRequester.get();
                     });
             },
+            title: 'Add Patient Record',
         }
     );
-        
+
     // Get list of doctors
     new Components
         .Request({
@@ -123,17 +122,17 @@ $(document).ready(function() {
                         value: doctor.id,
                     };
                 });
-            
+
             patientRecordForm.render({
                 fields: [
-                    selectDoctorField, 
-                    selectPatientField, 
-                    enterDiagnosisField, 
-                    enterTreatmentField
+                    selectDoctorField,
+                    selectPatientField,
+                    enterDiagnosisField,
+                    enterTreatmentField,
                 ],
             });
         });
-    
+
     // Get list of patients
     new Components
         .Request({
@@ -149,13 +148,13 @@ $(document).ready(function() {
                         value: patient.id,
                     };
                 });
-            
+
             patientRecordForm.render({
                 fields: [
-                    selectDoctorField, 
-                    selectPatientField, 
-                    enterDiagnosisField, 
-                    enterTreatmentField
+                    selectDoctorField,
+                    selectPatientField,
+                    enterDiagnosisField,
+                    enterTreatmentField,
                 ],
             });
         });
