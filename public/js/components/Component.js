@@ -30,7 +30,7 @@
      */
     function Component(element, props) {
         this.element = $(element);
-        this.props = this.assign({}, props);
+        this.props = this.assign(this.props || {}, props);
         this.props.children = this.props.children
             || this.element.children();
         this.props = Object.freeze(Object.seal(this.props));
